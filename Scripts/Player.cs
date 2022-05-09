@@ -26,6 +26,11 @@ public class Player : MonoBehaviour
     public float maxSocial = 100;
     public float currentSocial;
 
+    public int difficultyLevel;
+
+    [SerializeField]
+    private SceneNavigator sNav;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -48,11 +53,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TakeDamageBladder(1);
-        TakeDamageSleep(1);
-        TakeDamageHunger(1);
-        TakeDamageHygiene(1);
-        TakeDamageSocial(1);
+        TakeDamageBladder(difficultyLevel * 0.5f);
+        TakeDamageSleep(difficultyLevel * 0.5f);
+        TakeDamageHunger(difficultyLevel * 0.5f);
+        TakeDamageHygiene(difficultyLevel * 0.5f);
+        TakeDamageSocial(difficultyLevel * 0.5f);
 
 
         if (currentHunger <= 0)
@@ -68,7 +73,7 @@ public class Player : MonoBehaviour
 
     }
 
-    public void TakeDamageBladder(int damage)
+    public void TakeDamageBladder(float damage)
     {
         currentBladder -= (damage * Time.deltaTime) * Random.Range(0.7f, 1.1f);
         if (currentBladder < 0)
@@ -81,7 +86,7 @@ public class Player : MonoBehaviour
         
         bladder.SetBladder((currentBladder));
     }
-    public void TakeDamageSleep(int damage)
+    public void TakeDamageSleep(float damage)
     {
         currentSleep -= (damage * Time.deltaTime) * Random.Range(0.2f, 0.5f);
         if (currentSleep < 0)
@@ -96,7 +101,7 @@ public class Player : MonoBehaviour
         sleep.SetSleep((currentSleep));
     }
 
-    public void TakeDamageHunger(int damage)
+    public void TakeDamageHunger(float damage)
     {
         currentHunger -= (damage * Time.deltaTime) * Random.Range(0.5f, 1.1f);
         if (currentHunger < 0)
@@ -111,7 +116,7 @@ public class Player : MonoBehaviour
         hunger.SetHunger((currentHunger));
     }
 
-    public void TakeDamageHygiene(int damage)
+    public void TakeDamageHygiene(float damage)
     {
         currentHygiene -= (damage * Time.deltaTime) * Random.Range(0.3f, 0.5f);
         if (currentHygiene < 0)
@@ -126,7 +131,7 @@ public class Player : MonoBehaviour
         hygiene.SetHygiene((currentHygiene));
     }
 
-    public void TakeDamageSocial(int damage)
+    public void TakeDamageSocial(float damage)
     {
         currentSocial -= (damage * Time.deltaTime) * Random.Range(0.4f, 0.7f);
 
@@ -145,6 +150,20 @@ public class Player : MonoBehaviour
     void GameOver()
     {
         Debug.Log("Game Over!");
+        if(PlayerPrefs.HasKey("PositionX") && PlayerPrefs.HasKey("PositionY"))
+        {
+            PlayerPrefs.SetFloat("PositionX", 0f);
+            PlayerPrefs.SetFloat("PositionY", 0f);
+        }
+        if (PlayerPrefs.HasKey("GemAmount"))
+        {
+            PlayerPrefs.SetInt("GemAmount", 0);
+        }
+        if (PlayerPrefs.HasKey("DifficultyLevel"))
+        {
+            PlayerPrefs.SetInt("DifficultyLevel", 2);
+        }
+        sNav.FadeToLevel(3);
     }
 
     void ZeroHygiene()
