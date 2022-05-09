@@ -4,7 +4,6 @@ using UnityEngine;
 using TMPro;
 using Ink.Runtime;
 using UnityEngine.EventSystems;
-using Ink.UnityIntegration;
 
 public class DialogueManager : MonoBehaviour
 {   
@@ -14,8 +13,8 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI displayNameText;
     [SerializeField] private Animator portraitAnimator;
 
-    [Header("Globas Ink File")]
-    [SerializeField] private InkFile globalsInkFile;
+    [Header("Load Globals JSON")]
+    [SerializeField] private TextAsset loadGlobalsJSON;
 
     [Header("Choices UI")]
     [SerializeField] private GameObject[] choices;
@@ -33,7 +32,11 @@ public class DialogueManager : MonoBehaviour
     private DialogueVariables dialogueVariables;
 
     public mahmudNpc mahmud;
-
+    public sasoriNPC sasori;
+    public headManNPC headman;
+    public middleWoman middleWoman;
+    public middleMan middleMan;
+    public punkNPC punk;
     private void Awake()
     {
         if (instance != null)
@@ -41,7 +44,7 @@ public class DialogueManager : MonoBehaviour
             Debug.LogWarning("Found more than one Dialogue Manager in the scene");
         }
         instance = this;
-        dialogueVariables = new DialogueVariables(globalsInkFile.filePath);
+        dialogueVariables = new DialogueVariables(loadGlobalsJSON);
 
     }
 
@@ -66,11 +69,22 @@ public class DialogueManager : MonoBehaviour
     }
     private void Update()
     {
+        bool isTouched = false;
+
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            if(touch.phase == TouchPhase.Began)
+            {
+                isTouched = true;
+            }
+        }
+
         if (!dialogueIsPlaying)
         {
             return;
         }
-        if (currentStory.currentChoices.Count == 0 && Input.GetKeyDown("space"))
+        if (currentStory.currentChoices.Count == 0 && (Input.GetKeyDown("space") || isTouched || Input.GetMouseButtonDown(0)))
         {
             ContinueStory();
         }
@@ -182,7 +196,12 @@ public class DialogueManager : MonoBehaviour
         currentStory.ChooseChoiceIndex(choiceIndex);
         //Input.GetKeyDown("space");
         ContinueStory();
-        mahmud.button();   
+        mahmud.button();
+        sasori.button();
+        headman.button();
+        middleWoman.button();
+        middleMan.button();
+        punk.button();
 
     }
     public Ink.Runtime.Object GetVariableState(string variableName)
@@ -195,4 +214,5 @@ public class DialogueManager : MonoBehaviour
         }
         return variableValue;
     }
+   
 }

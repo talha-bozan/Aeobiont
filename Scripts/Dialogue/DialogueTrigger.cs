@@ -21,8 +21,20 @@ public class DialogueTrigger : MonoBehaviour
     {
         if (playerInRange && !DialogueManager.GetInstance().dialogueIsPlaying)
         {
+            bool isTouched = false;
+
+            if (Input.touchCount > 0)
+            {
+                Touch touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Began)
+                {
+                    isTouched = true;
+                    playerInRange = false;
+                }
+            }
+
             visualCue.SetActive(true);
-            if (Input.GetKeyDown("space"))
+            if (Input.GetKeyDown("space") || isTouched)
             {
                 DialogueManager.GetInstance().EnterDialogueMode(inkJSON);
             }
