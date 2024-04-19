@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.OnScreen;
 
 public class CharacterController2D : MonoBehaviour
 {
@@ -49,6 +50,7 @@ public class CharacterController2D : MonoBehaviour
     private LayerMask farmMask = default;
     private Collider2D farmCol;
 
+    [SerializeField] GameObject joystickHandleObject;
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();

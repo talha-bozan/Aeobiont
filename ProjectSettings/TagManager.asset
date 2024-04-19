@@ -3,12 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Fridge
-  - Shower
-  - Toilet
-  - Bed
-  - Farm
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -16,9 +11,9 @@ TagManager:
   - 
   - Water
   - UI
-  - PlotCell
-  - Utility
-  - Farm
+  - 
+  - 
+  - 
   - 
   - 
   - 
