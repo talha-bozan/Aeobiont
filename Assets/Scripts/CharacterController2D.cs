@@ -7,41 +7,40 @@ using UnityEngine.InputSystem.OnScreen;
 
 public class CharacterController2D : MonoBehaviour
 {
-    [SerializeField]
-    private float moveSpeed;
 
-    [SerializeField]
-    private InputAction playerControls;
+    [Header("Movement Settings")]
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float dashSpeed = 10f;
+    [SerializeField] private int dashCooldownLength = 100;
 
+    [Header("Component References")]
     private Rigidbody2D rb;
     private Animator anim;
-    private Gem gem;
-
-    [Space(10)]
-    [SerializeField]
-    private GameObject hotbar;
-    [SerializeField]
-    private GameObject ghostObject;
-    private SpriteRenderer spriteRenderer;
-    private BlockChanger blockChanger;
-    [SerializeField]
-    private Sprite[] sprites;
-
     private Vector2 moveDirection = Vector2.zero;
 
-    [SerializeField]
-    private Player player; // for needs
+    [Header("Input Settings")]
+    [SerializeField] private InputAction playerControls;
+    private bool canDash = true;
+    private int dashTimer;
 
-    [SerializeField]
-    private Joystick joystick;
+    [Header("UI Elements")]
+    [SerializeField] private GameObject hotbar;
+    [SerializeField] private BlockChanger blockChanger;
+    [SerializeField] private GameObject ghostObject;
+    [SerializeField] private Sprite[] sprites;
+    private SpriteRenderer spriteRenderer;
+
+    [Header("Platform Specific")]
+    [SerializeField] private GameObject joystickGameObject;
+    [SerializeField] private Joystick joystick;
+    private Gem gem;
+
 
     [Space(10)]
+    
     [SerializeField]
-    private float dashSpeed;
-    [SerializeField]
-    private int dashCooldownLength;
-    private int dashTimer;
-    private bool canDash = true;
+    private Player player; // for needs
+    [Space(10)]
 
     [SerializeField]
     private SavePrefs saveprefs;
@@ -50,7 +49,6 @@ public class CharacterController2D : MonoBehaviour
     private LayerMask farmMask = default;
     private Collider2D farmCol;
 
-    [SerializeField] GameObject joystickHandleObject;
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -58,62 +56,44 @@ public class CharacterController2D : MonoBehaviour
         blockChanger = GetComponent<BlockChanger>();
         gem = GetComponent<Gem>();
         spriteRenderer = ghostObject.GetComponent<SpriteRenderer>();
+        playerControls.Enable();
     }
 
     void Start()
     {
+#if UNITY_ANDROID || UNITY_IOS
+        joystickGameObject.SetActive(true);
+#else
+        joystickGameObject.SetActive(false);
+#endif
         saveprefs.LoadGame();
         player.difficultyLevel = saveprefs.difficultyLevel;
     }
 
     void Update()
     {
-        if (DialogueManager.GetInstance().dialogueIsPlaying)
+        if (blockChanger != null)
         {
-            moveDirection = Vector2.zero;
-            anim.SetFloat("Horizontal", moveDirection.x);
-            anim.SetFloat("Vertical", moveDirection.y);
-            return;
-        }
-        
-
-        moveDirection = playerControls.ReadValue<Vector2>().normalized;
-
-        anim.SetFloat("Horizontal", moveDirection.x);
-        anim.SetFloat("Vertical", moveDirection.y);
-
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-            Vector3 touchPosition = Camera.main.ScreenToWorldPoint(touch.position);
-            touchPosition.z = transform.position.z;
-            //transform.position = touchPosition;
-            anim.SetFloat("Horizontal", joystick.Horizontal);
-            anim.SetFloat("Vertical", joystick.Vertical);
-        }
-
-        if (hotbar.activeInHierarchy)
-        {
-            spriteRenderer.sprite = sprites[blockChanger.currentHotbarIndex];
-
-            ghostObject.SetActive(true);
-
-            Vector3 mousePos = Mouse.current.position.ReadValue();
-            //mousePos.z = Camera.main.farClipPlane * .5f;
-            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(mousePos);
-            worldPoint.x = worldPoint.x - worldPoint.x % 1 + 0.5f + 0.25f;
-            worldPoint.y = worldPoint.y - worldPoint.y % 1 - 0.5f - 0.25f + 1f;
-            
-            ghostObject.transform.position = new Vector3(worldPoint.x, worldPoint.y, ghostObject.transform.position.z);
-            //Debug.DrawLine(transform.position, Camera.main.ScreenToWorldPoint(mousePos));
+            int hotbarIndex = Mathf.Clamp(blockChanger.GetCurrentHotbarIndex(), 0, sprites.Length - 1);
+            // Now you can use hotbarIndex safely here.
         }
         else
         {
-            ghostObject.SetActive(false);
+            Debug.LogError("BlockChanger reference not set in the inspector!");
+        }
+        if (DialogueManager.GetInstance().dialogueIsPlaying)
+        {
+            moveDirection = Vector2.zero;
+            UpdateAnimations();
+            return;
         }
 
-        Vector2 playerLocation = new Vector2(transform.position.x, transform.position.y);
+        HandleInput();
+        UpdateAnimations();
+        UpdateGhostObject();
+               
 
+        Vector2 playerLocation = new Vector2(transform.position.x, transform.position.y);
 
         farmCol = Physics2D.OverlapCircle(playerLocation, 0.2f, farmMask);
 
@@ -125,50 +105,65 @@ public class CharacterController2D : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (DialogueManager.GetInstance().dialogueIsPlaying)
+        if (!DialogueManager.GetInstance().dialogueIsPlaying)
         {
-            rb.velocity = Vector2.zero;
-            return;
+            ProcessMovement();
+            HandleDash();
         }
-        if (!canDash)
-        {
-            if (dashTimer <= 0)
-                canDash = true;
-            else
-                dashTimer--;
-        }
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            playerDash();
-        }
-        //rb.velocity = new Vector2(moveDirection.x * moveSpeed * Time.deltaTime, moveDirection.y * moveSpeed * Time.deltaTime);
-        rb.velocity = new Vector2(joystick.Horizontal * moveSpeed * Time.deltaTime, joystick.Vertical * moveSpeed * Time.deltaTime);
+    }
+    private void HandleInput()
+    {
+#if UNITY_ANDROID || UNITY_IOS
+        moveDirection = new Vector2(joystick.Horizontal, joystick.Vertical).normalized;
+#else
+        moveDirection = playerControls.ReadValue<Vector2>().normalized;
+#endif
+    }
+    private void UpdateAnimations()
+    {
+        anim.SetFloat("Horizontal", moveDirection.x);
+        anim.SetFloat("Vertical", moveDirection.y);
     }
 
-    void playerDash()
+    private void ProcessMovement()
     {
-        if (canDash)
-        {
-            Vector2 vel = rb.velocity;
+        rb.velocity = moveDirection * moveSpeed * Time.fixedDeltaTime;
+    }
 
-            if (vel.x == 0f && vel.y == 0f)
+      private void UpdateGhostObject()
+    {
+        if (hotbar.activeInHierarchy)
+        {
+            int hotbarIndex = Mathf.Clamp(blockChanger.GetCurrentHotbarIndex(), 0, sprites.Length - 1);
+            spriteRenderer.sprite = sprites[hotbarIndex];
+
+            Vector3 mousePos = Mouse.current.position.ReadValue();
+            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(mousePos);
+            worldPoint.x = Mathf.Floor(worldPoint.x) + 0.5f;
+            worldPoint.y = Mathf.Floor(worldPoint.y) + 0.5f;
+            ghostObject.transform.position = new Vector3(worldPoint.x, worldPoint.y, 0);
+            ghostObject.SetActive(true);
+        }
+        else
+        {
+            ghostObject.SetActive(false);
+        }
+    }
+
+    private void HandleDash()
+    {
+        if (!canDash)
+        {
+            dashTimer--;
+            if (dashTimer <= 0)
             {
-                print("Player not moving.");
+                canDash = true;
             }
-            else if (Math.Abs(vel.x) >= Math.Abs(vel.y))
-            {
-                if (vel.x > 0)
-                { rb.AddForce(new Vector2(dashSpeed, 0)); }
-                else
-                { rb.AddForce(new Vector2(-dashSpeed, 0)); }
-            }
-            else
-            {
-                if (vel.y > 0)
-                { rb.AddForce(new Vector2(0, dashSpeed)); }
-                else
-                { rb.AddForce(new Vector2(0, -dashSpeed)); }
-            }
+        }
+        else if (canDash && moveDirection != Vector2.zero && Keyboard.current.shiftKey.isPressed)
+        {
+            Vector2 dashForce = moveDirection.normalized * dashSpeed;
+            rb.AddForce(dashForce, ForceMode2D.Impulse);
             canDash = false;
             dashTimer = dashCooldownLength;
         }
@@ -205,10 +200,6 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        playerControls.Enable();
-    }
     private void OnDisable()
     {
         playerControls.Disable();
