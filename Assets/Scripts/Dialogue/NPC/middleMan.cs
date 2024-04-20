@@ -7,8 +7,7 @@ public class middleMan : MonoBehaviour
     [SerializeField]
     private NeedManager player; // for needs
 
-    public Friendly friendly;
-    public Romance romance;
+
     // Start is called before the first frame update
     public int firstFriendly = 0;
     public int currentFriendly;
@@ -19,10 +18,10 @@ public class middleMan : MonoBehaviour
     void Start()
     {
         currentFriendly = firstFriendly;
-        friendly.SetFriendly(firstFriendly);
+        player.SetFriendly(firstFriendly);
 
         currentRomance = firstRomance;
-        romance.SetRomance(firstRomance);
+        player.SetRomance(firstRomance);
 
     }
 
@@ -58,9 +57,9 @@ public class middleMan : MonoBehaviour
                 {
                     deletion();
                     currentFriendly += 10;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
-                    Debug.Log("current friendly of choice_name_MMan = " + currentFriendly);
+                    Debug.Log("current player of choice_name_MMan = " + currentFriendly);
 
 
                 }
@@ -68,7 +67,7 @@ public class middleMan : MonoBehaviour
                 {
                     deletion();
                     currentFriendly = 100;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
                 break;
@@ -78,14 +77,14 @@ public class middleMan : MonoBehaviour
                 {
                     deletion();
                     currentRomance += 10;
-                    romance.SetRomance(currentRomance);
+                    player.SetRomance(currentRomance);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
                 else
                 {
                     deletion();
                     currentRomance = 100;
-                    romance.SetRomance(currentRomance);
+                    player.SetRomance(currentRomance);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
 
@@ -96,14 +95,14 @@ public class middleMan : MonoBehaviour
                 {
                     deletion();
                     currentFriendly -= 20;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
 
                 }
                 else
                 {
                     deletion();
                     currentFriendly = 10;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
 
                 }
 
@@ -115,13 +114,13 @@ public class middleMan : MonoBehaviour
                 {
                     deletion();
                     currentFriendly += 5;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
                     if (90 > currentRomance)
                     {
 
                         currentRomance += 5;
-                        romance.SetRomance(currentRomance);
+                        player.SetRomance(currentRomance);
                         player.IncreaseNeed(NeedManager.NeedType.social, 10);
 
                     }
@@ -132,7 +131,7 @@ public class middleMan : MonoBehaviour
                     {
                         deletion();
                         currentFriendly -= 10;
-                        friendly.SetFriendly(currentFriendly);
+                        player.SetFriendly(currentFriendly);
 
                     }
                 }
@@ -143,7 +142,7 @@ public class middleMan : MonoBehaviour
                 {
                     deletion();
                     currentFriendly -= 5;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                 }
                 break;
 
@@ -152,13 +151,13 @@ public class middleMan : MonoBehaviour
                 {
                     deletion();
                     currentRomance -= 10;
-                    romance.SetRomance(currentRomance);
+                    player.SetRomance(currentRomance);
                 }
                 else
                 {
                     deletion();
                     currentRomance = 10;
-                    romance.SetRomance(currentRomance);
+                    player.SetRomance(currentRomance);
 
                 }
                 break;
@@ -168,7 +167,7 @@ public class middleMan : MonoBehaviour
                 {
                     deletion();
                     currentFriendly -= 10;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                 }
                 break;
 

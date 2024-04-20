@@ -7,8 +7,6 @@ public class mahmudNpc : MonoBehaviour
     [SerializeField]
     private NeedManager player; // for needs
 
-    public Friendly friendly;
-    public Romance romance;
     // Start is called before the first frame update
     public int firstFriendly = 0;
     public int currentFriendly; 
@@ -19,10 +17,10 @@ public class mahmudNpc : MonoBehaviour
     void Start()
     {
         currentFriendly = firstFriendly;
-        friendly.SetFriendly(firstFriendly);
+        player.SetFriendly(firstFriendly);
 
         currentRomance = firstRomance;
-        romance.SetRomance(firstRomance);
+        player.SetRomance(firstRomance);
 
     }
 
@@ -58,7 +56,7 @@ public class mahmudNpc : MonoBehaviour
                 {  
                     deletion();
                     currentFriendly += 10;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
                     Debug.Log("current friendly of mahmud = " + currentFriendly);
                     //SoundManager.playSound("fridge_open");
@@ -67,7 +65,7 @@ public class mahmudNpc : MonoBehaviour
                 {
                     deletion();
                     currentFriendly = 100;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
                 break;
@@ -77,14 +75,14 @@ public class mahmudNpc : MonoBehaviour
                 {
                     deletion();
                     currentRomance += 10;
-                    romance.SetRomance(currentRomance);
+                    player.SetRomance(currentRomance);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
                 else
                 {
                     deletion();
                     currentRomance = 100;
-                    romance.SetRomance(currentRomance);
+                    player.SetRomance(currentRomance);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
 
@@ -95,13 +93,13 @@ public class mahmudNpc : MonoBehaviour
                 {
                     deletion();
                     currentFriendly -= 20;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
 
                 }
                 else {
                     deletion();
                     currentFriendly = 10;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
 
                 }
 
@@ -112,13 +110,13 @@ public class mahmudNpc : MonoBehaviour
                 if(currentFriendly > 60 && currentFriendly < 90 )
                 {   deletion();
                     currentFriendly += 5;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                     player.IncreaseNeed(NeedManager.NeedType.social, 10);
                     if (90 > currentRomance)
                     {
                         deletion();
                         currentRomance += 5;
-                        romance.SetRomance(currentRomance);
+                        player.SetRomance(currentRomance);
                         player.IncreaseNeed(NeedManager.NeedType.social, 10);
 
                     }
@@ -129,7 +127,7 @@ public class mahmudNpc : MonoBehaviour
                     {
                         deletion();
                         currentFriendly -= 10;
-                        friendly.SetFriendly(currentFriendly);
+                        player.SetFriendly(currentFriendly);
 
                     }
                 }
@@ -140,7 +138,7 @@ public class mahmudNpc : MonoBehaviour
                 {
                     deletion();
                     currentFriendly -= 5;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                 }
                 break;
 
@@ -149,13 +147,13 @@ public class mahmudNpc : MonoBehaviour
                 {
                     deletion();
                     currentRomance -= 10;
-                    romance.SetRomance(currentRomance);
+                    player.SetRomance(currentRomance);
                 }
                 else
                 {
                     deletion();
                     currentRomance = 10;
-                    romance.SetRomance(currentRomance);
+                    player.SetRomance(currentRomance);
 
                 }
                 break;
@@ -165,7 +163,7 @@ public class mahmudNpc : MonoBehaviour
                 {
                     deletion();
                     currentFriendly -= 10;
-                    friendly.SetFriendly(currentFriendly);
+                    player.SetFriendly(currentFriendly);
                 }
                 break;
 

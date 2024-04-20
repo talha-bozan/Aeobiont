@@ -7,6 +7,8 @@ public class NeedManager : MonoBehaviour
     public Need hunger;
     public Need hygiene;
     public Need social;
+    public Need friendly;
+    public Need romance;
 
     public enum NeedType
     {
@@ -14,7 +16,9 @@ public class NeedManager : MonoBehaviour
         sleep,
         hunger,
         social,
-        hygiene
+        hygiene,
+        romance,
+        friendly
     }
 
     public int difficultyLevel;
@@ -137,6 +141,15 @@ public class NeedManager : MonoBehaviour
                 Debug.LogWarning("Unhandled need type: " + type);
                 break;
         }
+    }
+
+    public void SetFriendly(float value)
+    {
+        friendly.SetValue(value);
+    }
+    public void SetRomance(float value)
+    {
+        romance.SetValue(value);
     }
 
 }
