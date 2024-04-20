@@ -10,7 +10,8 @@ public class Social_Button : MonoBehaviour
     public void TaskOnClick()
     {
         Debug.Log("social butonuna basildi");
-        player.currentSocial = 100;
+        player.ResetNeed(NeedManager.NeedType.social);
+
 
     }
 }

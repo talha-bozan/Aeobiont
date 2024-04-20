@@ -176,7 +176,7 @@ public class CharacterController2D : MonoBehaviour
             {
                 SoundManager.playSound("fridge_open");
                 gem.changeBalance(-20);
-                needManager.currentHunger = Mathf.Lerp(needManager.currentHunger, needManager.maxHunger, 0.7f);
+                needManager.InterpolateNeed(NeedManager.NeedType.hunger, 0.7f);
             }
             else
             {
@@ -186,16 +186,17 @@ public class CharacterController2D : MonoBehaviour
         else if (other.CompareTag("Toilet"))
         {
             SoundManager.playSound("toilet_flush");
-            needManager.currentBladder = needManager.maxBladder;
+            needManager.ResetNeed(NeedManager.NeedType.bladder);
         }
         else if (other.CompareTag("Shower"))
         {
             SoundManager.playSound("sink_wash");
-            needManager.currentHygiene = Mathf.Lerp(needManager.currentHygiene, needManager.maxHygiene, 0.7f);
+            needManager.InterpolateNeed(NeedManager.NeedType.hygiene, 0.7f);
         }
         else if (other.CompareTag("Bed"))
         {
-            needManager.currentSleep = needManager.maxSleep;
+            needManager.ResetNeed(NeedManager.NeedType.sleep);
+
         }
     }
 

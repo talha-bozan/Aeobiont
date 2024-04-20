@@ -10,7 +10,7 @@ public class Hygiene_Button : MonoBehaviour
 	public void TaskOnClick()
 	{
 		Debug.Log("Hygiene butonuna basildi");
-		player.currentHygiene = 100;
+		player.ResetNeed(NeedManager.NeedType.hygiene);
 
 	}
 }

@@ -10,7 +10,8 @@ public class Sleep_Button : MonoBehaviour
 	public void TaskOnClick()
 	{
 		Debug.Log("sleep butonuna basildi");
-		player.currentSleep = 100;
+        player.ResetNeed(NeedManager.NeedType.sleep);
 
-	}
+
+    }
 }

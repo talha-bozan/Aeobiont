@@ -10,7 +10,9 @@ public class WC_Button : MonoBehaviour
     public void TaskOnClickForWC()
     {
         Debug.Log("wc butonuna basildi");
-        player.currentBladder = 100;
+        player.ResetNeed(NeedManager.NeedType.bladder);
+
+
 
     }
 }

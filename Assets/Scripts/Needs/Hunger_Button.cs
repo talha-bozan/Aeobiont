@@ -10,7 +10,8 @@ public class Hunger_Button : MonoBehaviour
 	public void TaskOnClick()
 	{
 		Debug.Log("hunger butonuna basildi");
-		player.currentHunger = 100;
+        player.ResetNeed(NeedManager.NeedType.hunger);
 
-	}
+
+    }
 }

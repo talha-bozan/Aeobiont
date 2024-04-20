@@ -35,7 +35,7 @@ public class punkNPC : MonoBehaviour
                 break;
             case "social10":
                 deletion();
-                player.currentSocial += 10;
+                player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 Debug.Log("social10 secildi");
                 break;
             default:

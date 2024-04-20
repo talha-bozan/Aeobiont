@@ -59,7 +59,7 @@ public class mahmudNpc : MonoBehaviour
                     deletion();
                     currentFriendly += 10;
                     friendly.SetFriendly(currentFriendly);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                     Debug.Log("current friendly of mahmud = " + currentFriendly);
                     //SoundManager.playSound("fridge_open");
                 }
@@ -68,7 +68,7 @@ public class mahmudNpc : MonoBehaviour
                     deletion();
                     currentFriendly = 100;
                     friendly.SetFriendly(currentFriendly);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
                 break;
 
@@ -78,14 +78,14 @@ public class mahmudNpc : MonoBehaviour
                     deletion();
                     currentRomance += 10;
                     romance.SetRomance(currentRomance);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
                 else
                 {
                     deletion();
                     currentRomance = 100;
                     romance.SetRomance(currentRomance);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
 
                 break;
@@ -113,13 +113,13 @@ public class mahmudNpc : MonoBehaviour
                 {   deletion();
                     currentFriendly += 5;
                     friendly.SetFriendly(currentFriendly);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                     if (90 > currentRomance)
                     {
                         deletion();
                         currentRomance += 5;
                         romance.SetRomance(currentRomance);
-                        player.currentSocial += 10;
+                        player.IncreaseNeed(NeedManager.NeedType.social, 10);
 
                     }
                 }

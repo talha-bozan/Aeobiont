@@ -59,7 +59,7 @@ public class middleMan : MonoBehaviour
                     deletion();
                     currentFriendly += 10;
                     friendly.SetFriendly(currentFriendly);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                     Debug.Log("current friendly of choice_name_MMan = " + currentFriendly);
 
 
@@ -69,7 +69,7 @@ public class middleMan : MonoBehaviour
                     deletion();
                     currentFriendly = 100;
                     friendly.SetFriendly(currentFriendly);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
                 break;
 
@@ -79,14 +79,14 @@ public class middleMan : MonoBehaviour
                     deletion();
                     currentRomance += 10;
                     romance.SetRomance(currentRomance);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
                 else
                 {
                     deletion();
                     currentRomance = 100;
                     romance.SetRomance(currentRomance);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                 }
 
                 break;
@@ -116,13 +116,13 @@ public class middleMan : MonoBehaviour
                     deletion();
                     currentFriendly += 5;
                     friendly.SetFriendly(currentFriendly);
-                    player.currentSocial += 10;
+                    player.IncreaseNeed(NeedManager.NeedType.social, 10);
                     if (90 > currentRomance)
                     {
 
                         currentRomance += 5;
                         romance.SetRomance(currentRomance);
-                        player.currentSocial += 10;
+                        player.IncreaseNeed(NeedManager.NeedType.social, 10);
 
                     }
                 }
