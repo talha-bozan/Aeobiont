@@ -3,12 +3,17 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Farm
+  - Shower
+  - Bed
+  - Fridge
+  - Toilet
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Farm
   - Water
   - UI
   - 

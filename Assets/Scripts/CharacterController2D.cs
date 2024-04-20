@@ -39,14 +39,14 @@ public class CharacterController2D : MonoBehaviour
     [Space(10)]
     
     [SerializeField]
-    private Player player; // for needs
+    private NeedManager needManager; // for needs
     [Space(10)]
 
     [SerializeField]
     private SavePrefs saveprefs;
 
     [SerializeField]
-    private LayerMask farmMask = default;
+    private LayerMask farmMask;
     private Collider2D farmCol;
 
     void Awake()
@@ -67,7 +67,7 @@ public class CharacterController2D : MonoBehaviour
         joystickGameObject.SetActive(false);
 #endif
         saveprefs.LoadGame();
-        player.difficultyLevel = saveprefs.difficultyLevel;
+        needManager.difficultyLevel = saveprefs.difficultyLevel;
     }
 
     void Update()
@@ -96,7 +96,6 @@ public class CharacterController2D : MonoBehaviour
         Vector2 playerLocation = new Vector2(transform.position.x, transform.position.y);
 
         farmCol = Physics2D.OverlapCircle(playerLocation, 0.2f, farmMask);
-
         if (farmCol != null)
         {
             gem.changeBalance(0.05f);
@@ -177,7 +176,7 @@ public class CharacterController2D : MonoBehaviour
             {
                 SoundManager.playSound("fridge_open");
                 gem.changeBalance(-20);
-                player.currentHunger = Mathf.Lerp(player.currentHunger, player.maxHunger, 0.7f);
+                needManager.currentHunger = Mathf.Lerp(needManager.currentHunger, needManager.maxHunger, 0.7f);
             }
             else
             {
@@ -187,16 +186,16 @@ public class CharacterController2D : MonoBehaviour
         else if (other.CompareTag("Toilet"))
         {
             SoundManager.playSound("toilet_flush");
-            player.currentBladder = player.maxBladder;
+            needManager.currentBladder = needManager.maxBladder;
         }
         else if (other.CompareTag("Shower"))
         {
             SoundManager.playSound("sink_wash");
-            player.currentHygiene = Mathf.Lerp(player.currentHygiene, player.maxHygiene, 0.7f);
+            needManager.currentHygiene = Mathf.Lerp(needManager.currentHygiene, needManager.maxHygiene, 0.7f);
         }
         else if (other.CompareTag("Bed"))
         {
-            player.currentSleep = player.maxSleep;
+            needManager.currentSleep = needManager.maxSleep;
         }
     }
 

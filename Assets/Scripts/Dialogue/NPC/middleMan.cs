@@ -5,7 +5,7 @@ using UnityEngine;
 public class middleMan : MonoBehaviour
 {
     [SerializeField]
-    private Player player; // for needs
+    private NeedManager player; // for needs
 
     public Friendly friendly;
     public Romance romance;

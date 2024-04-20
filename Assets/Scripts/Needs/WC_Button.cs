@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class WC_Button : MonoBehaviour
 {
-    public Player player;
+    public NeedManager player;
 
-    public void TaskOnClick()
+    public void TaskOnClickForWC()
     {
         Debug.Log("wc butonuna basildi");
         player.currentBladder = 100;

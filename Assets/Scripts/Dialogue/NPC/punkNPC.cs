@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class punkNPC : MonoBehaviour
 {
-    public Player player; // for needs
+    public NeedManager player; // for needs
 
     // Start is called before the first frame update
     void Start()

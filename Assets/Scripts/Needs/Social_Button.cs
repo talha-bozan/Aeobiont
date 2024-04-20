@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Social_Button : MonoBehaviour
 {
-    public Player player;
+    public NeedManager player;
 
     public void TaskOnClick()
     {
