@@ -41,20 +41,6 @@ public class Gem : MonoBehaviour
         updateBalanceText();
     }
 
-    public void changeBalance(float increaseAmount)
-    {
-        dirtyGem += increaseAmount;
-
-        gemAmount = (int) dirtyGem;
-
-        if (gemAmount < 0)
-        {
-            gemAmount = 0;
-        }
-
-        updateBalanceText();
-    }
-
     private void updateBalanceText()
     {
         gemAmountText.text = gemAmount.ToString();

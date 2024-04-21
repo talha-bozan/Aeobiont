@@ -77,15 +77,6 @@ public class CharacterController2D : MonoBehaviour
 
         HandleInput();
         UpdateAnimations();
-               
-
-        Vector2 playerLocation = new Vector2(transform.position.x, transform.position.y);
-
-        farmCol = Physics2D.OverlapCircle(playerLocation, 0.2f, farmMask);
-        if (farmCol != null)
-        {
-            gem.changeBalance(0.05f);
-        }
     }
 
     void FixedUpdate()
