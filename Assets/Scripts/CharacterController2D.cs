@@ -25,10 +25,6 @@ public class CharacterController2D : MonoBehaviour
 
     [Header("UI Elements")]
     [SerializeField] private GameObject hotbar;
-    [SerializeField] private BlockChanger blockChanger;
-    [SerializeField] private GameObject ghostObject;
-    [SerializeField] private Sprite[] sprites;
-    private SpriteRenderer spriteRenderer;
 
     [Header("Platform Specific")]
     [SerializeField] private GameObject joystickGameObject;
@@ -53,9 +49,8 @@ public class CharacterController2D : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        blockChanger = GetComponent<BlockChanger>();
         gem = GetComponent<Gem>();
-        spriteRenderer = ghostObject.GetComponent<SpriteRenderer>();
+        
         playerControls.Enable();
     }
 
@@ -72,15 +67,7 @@ public class CharacterController2D : MonoBehaviour
 
     void Update()
     {
-        if (blockChanger != null)
-        {
-            int hotbarIndex = Mathf.Clamp(blockChanger.GetCurrentHotbarIndex(), 0, sprites.Length - 1);
-            // Now you can use hotbarIndex safely here.
-        }
-        else
-        {
-            Debug.LogError("BlockChanger reference not set in the inspector!");
-        }
+       
         if (DialogueManager.GetInstance().dialogueIsPlaying)
         {
             moveDirection = Vector2.zero;
@@ -90,7 +77,6 @@ public class CharacterController2D : MonoBehaviour
 
         HandleInput();
         UpdateAnimations();
-        UpdateGhostObject();
                
 
         Vector2 playerLocation = new Vector2(transform.position.x, transform.position.y);
@@ -127,26 +113,6 @@ public class CharacterController2D : MonoBehaviour
     private void ProcessMovement()
     {
         rb.velocity = moveDirection * moveSpeed * Time.fixedDeltaTime;
-    }
-
-      private void UpdateGhostObject()
-    {
-        if (hotbar.activeInHierarchy)
-        {
-            int hotbarIndex = Mathf.Clamp(blockChanger.GetCurrentHotbarIndex(), 0, sprites.Length - 1);
-            spriteRenderer.sprite = sprites[hotbarIndex];
-
-            Vector3 mousePos = Mouse.current.position.ReadValue();
-            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(mousePos);
-            worldPoint.x = Mathf.Floor(worldPoint.x) + 0.5f;
-            worldPoint.y = Mathf.Floor(worldPoint.y) + 0.5f;
-            ghostObject.transform.position = new Vector3(worldPoint.x, worldPoint.y, 0);
-            ghostObject.SetActive(true);
-        }
-        else
-        {
-            ghostObject.SetActive(false);
-        }
     }
 
     private void HandleDash()
