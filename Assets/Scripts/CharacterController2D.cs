@@ -53,12 +53,22 @@ public class CharacterController2D : MonoBehaviour
 
     void Update()
     {
+        if (DialogueManager.GetInstance().dialogueIsPlaying)
+        {
+            moveDirection = Vector2.zero;
+            return;
+        }
         HandleInput();
         UpdateAnimations();
     }
 
     void FixedUpdate()
     {
+        if (DialogueManager.GetInstance().dialogueIsPlaying)
+        {
+            moveDirection = Vector2.zero;
+            return;
+        }
         ProcessMovement();
         HandleDash();
     }
