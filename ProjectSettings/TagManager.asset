@@ -9,6 +9,7 @@ TagManager:
   - Bed
   - Fridge
   - Toilet
+  - Home
   layers:
   - Default
   - TransparentFX

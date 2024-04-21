@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PlayerBuildInteracter : MonoBehaviour
 {
@@ -18,31 +19,29 @@ public class PlayerBuildInteracter : MonoBehaviour
     [SerializeField] private BlockChanger blockChanger;
     [SerializeField] private Sprite[] sprites;
 
-    public Collider2D theCollider;
-
     [SerializeField]
     private Joystick joystick;
+
+    private Collider2D lastCollider; // Cache the last checked collider
 
     private void Awake()
     {
         spriteRenderer = ghostObject.GetComponent<SpriteRenderer>();
         blockChanger = GetComponent<BlockChanger>();
-
     }
 
     private void Update()
     {
-        if (blockChanger != null)
-        {
-            int hotbarIndex = Mathf.Clamp(blockChanger.GetCurrentHotbarIndex(), 0, sprites.Length - 1);
-            // Now you can use hotbarIndex safely here.
-        }
-        else
+        if (blockChanger == null)
         {
             Debug.LogError("BlockChanger reference not set in the inspector!");
+            return;
         }
-        HandleHotbarAndPlotSign();
-        UpdateGhostObject();
+
+        int hotbarIndex = Mathf.Clamp(blockChanger.GetCurrentHotbarIndex(), 0, sprites.Length - 1);
+
+        UpdateGhostObject(hotbarIndex);
+
 #if UNITY_ANDROID || UNITY_IOS
         HandleTouchInput();
 #else
@@ -50,68 +49,57 @@ public class PlayerBuildInteracter : MonoBehaviour
 #endif
     }
 
-    private void HandleHotbarAndPlotSign()
-    {
-        Vector2 playerLocation = new Vector2(transform.position.x, transform.position.y);
-        theCollider = Physics2D.OverlapCircle(playerLocation, 1.0f, mask);
 
-        if (theCollider != null)
-        {
-           hotbar.SetActive(true);
-           plotSign.SetActive(true);
-        }
-        else
-        {
-            hotbar.SetActive(false);
-            plotSign.SetActive(false);
-        }
-    }
 
     private void HandleTouchInput()
     {
         if (Input.touchCount > 0)
         {
+            // Check if joystick input is active
             if (joystick.Horizontal != 0 || joystick.Vertical != 0)
             {
                 return;
             }
 
+            // Get the first touch position
             Touch touch = Input.GetTouch(0);
             Vector3 touchPosition = Camera.main.ScreenToWorldPoint(touch.position);
-            touchPosition.z = 0f;
+            touchPosition.z = 0f; // Ensure it's in the 2D plane
 
-            Vector2 nearestGrid = new Vector2(touchPosition.x, touchPosition.y);
+            // Raycast to find the object at the touch position
+            RaycastHit2D hit = Physics2D.Raycast(touchPosition, Vector2.zero, 0.1f, mask); // Zero vector for precise check
 
-            theCollider = Physics2D.OverlapCircle(nearestGrid, 0.0f, mask);
-
-            if (theCollider != null)
+            if (hit.collider != null)
             {
-                GridCell plotGrid = theCollider.GetComponent<GridCell>();
-                if (objectToPlace == null)
-                    plotGrid.deleteObject();
-                else
-                    plotGrid.placeObject(objectToPlace);
+                GridCell plotGrid = hit.collider.GetComponent<GridCell>();
+                if (plotGrid != null)
+                {
+                    if (objectToPlace == null)
+                        plotGrid.deleteObject(); // Delete object if objectToPlace is null
+                    else
+                        plotGrid.placeObject(objectToPlace); // Place object otherwise
+                }
             }
         }
     }
-
     private void HandleMouseInput()
+{
+    if (EventSystem.current.IsPointerOverGameObject())
+        return;
+
+    if (Mouse.current.leftButton.isPressed)
     {
-        if (EventSystem.current.IsPointerOverGameObject())
-            return;
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        mousePosition.z = 0f;
 
-        if (Mouse.current.leftButton.isPressed)
+        // Use Raycast to find the first object hit
+        RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, 0.1f, mask); // Zero vector to raycast to the exact point
+
+        if (hit.collider != null)
         {
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            mousePosition.z = 0f;
-
-            Vector2 nearestGrid = new Vector2(mousePosition.x, mousePosition.y);
-
-            theCollider = Physics2D.OverlapCircle(nearestGrid, 0.0f, mask);
-
-            if (theCollider != null)
+            GridCell plotGrid = hit.collider.GetComponent<GridCell>();
+            if (plotGrid != null)
             {
-                GridCell plotGrid = theCollider.GetComponent<GridCell>();
                 if (objectToPlace == null)
                     plotGrid.deleteObject();
                 else
@@ -119,12 +107,13 @@ public class PlayerBuildInteracter : MonoBehaviour
             }
         }
     }
+}
 
-    private void UpdateGhostObject()
+
+private void UpdateGhostObject(int hotbarIndex)
     {
         if (hotbar.activeInHierarchy)
         {
-            int hotbarIndex = Mathf.Clamp(blockChanger.GetCurrentHotbarIndex(), 0, sprites.Length - 1);
             spriteRenderer.sprite = sprites[hotbarIndex];
 
             Vector3 mousePos = Mouse.current.position.ReadValue();
@@ -137,6 +126,29 @@ public class PlayerBuildInteracter : MonoBehaviour
         else
         {
             ghostObject.SetActive(false);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Check if the collider belongs to the trigger area
+        if (other.CompareTag("Home"))
+        {
+            hotbar.SetActive(true);
+            plotSign.SetActive(true);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if(gameObject != null)
+        {
+            // Check if the collider belongs to the trigger area
+            if (other.CompareTag("Home"))
+            {
+                hotbar.SetActive(false);
+                plotSign.SetActive(false);
+            }
         }
     }
 }

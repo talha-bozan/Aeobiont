@@ -18,7 +18,10 @@ public class GridCell : MonoBehaviour
         gridPlace = GetComponent<Transform>().position;
         gridPlace.z = 0f;
     }
-
+    public Vector3 GetPosition()
+    {
+        return gridPlace;
+    }
     public void placeObject(GameObject objectToPlace)
     {
         if (isOccupied)
