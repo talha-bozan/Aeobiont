@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Cysharp.Threading.Tasks; 
 using DG.Tweening;
 
 public class CharacterController2D : MonoBehaviour
 {
     [Header("Movement Settings")]
-    private float _moveSpeed = 100f; // Reduced speed
+    private float _moveSpeed = 100f; 
     public float MoveSpeed
     {
         get { return _moveSpeed; }
@@ -19,7 +20,6 @@ public class CharacterController2D : MonoBehaviour
         get { return _dashSpeed; }
         set { _dashSpeed = value; }
     }
-    [SerializeField] private int dashCooldownLength = 100;
 
     [Header("Component References")]
     private Rigidbody2D rb;
@@ -29,7 +29,6 @@ public class CharacterController2D : MonoBehaviour
     [Header("Input Settings")]
     [SerializeField] private InputAction playerControls;
     private bool canDash = true;
-    private int dashTimer;
 
     [Header("Platform Specific")]
     [SerializeField] private GameObject joystickGameObject;
@@ -81,38 +80,32 @@ public class CharacterController2D : MonoBehaviour
 
     private void ProcessMovement()
     {
-        // Clear any existing DOTween movement to prevent interruptions
-        
+        DOTween.Kill(rb);
 
-        // Calculate the target position
         Vector2 targetPosition = rb.position + (moveDirection * _moveSpeed * Time.fixedDeltaTime);
 
-        // Smoothly tween to the target position with a slight easing
         rb.DOMove(targetPosition, 0.2f).SetEase(Ease.Linear);
     }
 
-    private void HandleDash()
+    private async void HandleDash()
     {
         if (canDash && moveDirection != Vector2.zero && Keyboard.current.shiftKey.isPressed)
         {
             Vector2 dashForce = moveDirection.normalized * _dashSpeed;
 
-
-            rb.DOMove(rb.position + dashForce, 0.1f) // Short dash with easing
+            rb.DOMove(rb.position + dashForce, 0.1f) 
                .SetEase(Ease.InOutQuad);
 
             canDash = false;
-            dashTimer = dashCooldownLength;
-        }
 
-        if (!canDash)
-        {
-            dashTimer--;
-            if (dashTimer <= 0)
-            {
-                canDash = true;
-            }
+            await StartDashCooldown(); 
         }
+    }
+
+    private async UniTask StartDashCooldown()
+    {
+        await UniTask.Delay(3000); 
+        canDash = true;
     }
 
     private void OnDisable()
