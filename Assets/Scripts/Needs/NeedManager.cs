@@ -1,3 +1,4 @@
+using System.Globalization;
 using UnityEngine;
 
 public class NeedManager : MonoBehaviour
@@ -10,6 +11,7 @@ public class NeedManager : MonoBehaviour
     public Need friendly;
     public Need romance;
 
+    [SerializeField] private Gem gem;
     public enum NeedType
     {
         bladder,
@@ -30,6 +32,9 @@ public class NeedManager : MonoBehaviour
     }
     void Start()
     {
+        difficultyLevel = PlayerPrefs.GetInt("DifficultyLevel", 2);
+
+
         bladder.SetMaxValue(bladder.GetMaxValue());
         sleep.SetMaxValue(bladder.GetMaxValue());
         hunger.SetMaxValue(bladder.GetMaxValue());
@@ -45,6 +50,7 @@ public class NeedManager : MonoBehaviour
         UpdateNeed(hunger, difficultyLevel * 0.5f);
         UpdateNeed(hygiene, difficultyLevel * 0.5f);
         UpdateNeed(social, difficultyLevel * 0.5f);
+        Debug.Log(difficultyLevel);
         
         CheckGameOver();
     }
@@ -52,8 +58,6 @@ public class NeedManager : MonoBehaviour
     public void UpdateNeed(Need need, float decayRate)
     {
         float damage = decayRate * Time.deltaTime * Random.Range(0.7f, 1.1f);
-        
-        
         need.SetValue(need.GetValue() - damage);  
     }
 
@@ -155,5 +159,35 @@ public class NeedManager : MonoBehaviour
     {
         romance.SetValue(value);
     }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Fridge"))
+        {
+            if (gem.getBalance() >= 20)
+            {
+                SoundManager.playSound("fridge_open");
+                gem.changeBalance(-20);
+                InterpolateNeed(NeedManager.NeedType.hunger, 0.7f);
+            }
+            else
+            {
+                Debug.Log("You don't have enough money to eat; you should go to the farm.");
+            }
+        }
+        else if (other.CompareTag("Toilet"))
+        {
+            SoundManager.playSound("toilet_flush");
+            ResetNeed(NeedManager.NeedType.bladder);
+        }
+        else if (other.CompareTag("Shower"))
+        {
+            SoundManager.playSound("sink_wash");
+            InterpolateNeed(NeedManager.NeedType.hygiene, 0.7f);
+        }
+        else if (other.CompareTag("Bed"))
+        {
+            ResetNeed(NeedManager.NeedType.sleep);
 
+        }
+    }
 }
