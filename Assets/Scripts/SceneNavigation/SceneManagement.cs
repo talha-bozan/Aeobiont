@@ -5,7 +5,8 @@ using UnityEngine;
 public class SceneManagement : MonoBehaviour
 {
     [SerializeField] private Canvas firstScreen;
-    [SerializeField] private Canvas customizeScreen;
+    [SerializeField] private Canvas customizeScreen
+        ;
 
     public void ChangeCanvasToCustomize()
     {

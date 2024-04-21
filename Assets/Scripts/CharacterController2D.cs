@@ -1,16 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.OnScreen;
+using DG.Tweening;
 
 public class CharacterController2D : MonoBehaviour
 {
-
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float dashSpeed = 10f;
+    private float _moveSpeed = 100f; // Reduced speed
+    public float MoveSpeed
+    {
+        get { return _moveSpeed; }
+        set { _moveSpeed = value; }
+    }
+    private float _dashSpeed = 200f;
+    public float DashSpeed
+    {
+        get { return _dashSpeed; }
+        set { _dashSpeed = value; }
+    }
     [SerializeField] private int dashCooldownLength = 100;
 
     [Header("Component References")]
@@ -23,34 +31,15 @@ public class CharacterController2D : MonoBehaviour
     private bool canDash = true;
     private int dashTimer;
 
-    [Header("UI Elements")]
-    [SerializeField] private GameObject hotbar;
-
     [Header("Platform Specific")]
     [SerializeField] private GameObject joystickGameObject;
     [SerializeField] private Joystick joystick;
-    private Gem gem;
-
-
-    [Space(10)]
-    
-    [SerializeField]
-    private NeedManager needManager; // for needs
-    [Space(10)]
-
-    [SerializeField]
-    private SavePrefs saveprefs;
-
-    [SerializeField]
-    private LayerMask farmMask;
-    private Collider2D farmCol;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        gem = GetComponent<Gem>();
-        
+
         playerControls.Enable();
     }
 
@@ -61,32 +50,20 @@ public class CharacterController2D : MonoBehaviour
 #else
         joystickGameObject.SetActive(false);
 #endif
-        saveprefs.LoadGame();
-        needManager.difficultyLevel = saveprefs.difficultyLevel;
     }
 
     void Update()
     {
-       
-        if (DialogueManager.GetInstance().dialogueIsPlaying)
-        {
-            moveDirection = Vector2.zero;
-            UpdateAnimations();
-            return;
-        }
-
         HandleInput();
         UpdateAnimations();
     }
 
     void FixedUpdate()
     {
-        if (!DialogueManager.GetInstance().dialogueIsPlaying)
-        {
-            ProcessMovement();
-            HandleDash();
-        }
+        ProcessMovement();
+        HandleDash();
     }
+
     private void HandleInput()
     {
 #if UNITY_ANDROID || UNITY_IOS
@@ -95,6 +72,7 @@ public class CharacterController2D : MonoBehaviour
         moveDirection = playerControls.ReadValue<Vector2>().normalized;
 #endif
     }
+
     private void UpdateAnimations()
     {
         anim.SetFloat("Horizontal", moveDirection.x);
@@ -103,11 +81,30 @@ public class CharacterController2D : MonoBehaviour
 
     private void ProcessMovement()
     {
-        rb.velocity = moveDirection * moveSpeed * Time.fixedDeltaTime;
+        // Clear any existing DOTween movement to prevent interruptions
+        
+
+        // Calculate the target position
+        Vector2 targetPosition = rb.position + (moveDirection * _moveSpeed * Time.fixedDeltaTime);
+
+        // Smoothly tween to the target position with a slight easing
+        rb.DOMove(targetPosition, 0.2f).SetEase(Ease.Linear);
     }
 
     private void HandleDash()
     {
+        if (canDash && moveDirection != Vector2.zero && Keyboard.current.shiftKey.isPressed)
+        {
+            Vector2 dashForce = moveDirection.normalized * _dashSpeed;
+
+
+            rb.DOMove(rb.position + dashForce, 0.1f) // Short dash with easing
+               .SetEase(Ease.InOutQuad);
+
+            canDash = false;
+            dashTimer = dashCooldownLength;
+        }
+
         if (!canDash)
         {
             dashTimer--;
@@ -116,50 +113,10 @@ public class CharacterController2D : MonoBehaviour
                 canDash = true;
             }
         }
-        else if (canDash && moveDirection != Vector2.zero && Keyboard.current.shiftKey.isPressed)
-        {
-            Vector2 dashForce = moveDirection.normalized * dashSpeed;
-            rb.AddForce(dashForce, ForceMode2D.Impulse);
-            canDash = false;
-            dashTimer = dashCooldownLength;
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if(other.CompareTag("Fridge"))
-        {
-            if(gem.getBalance() >= 20)
-            {
-                SoundManager.playSound("fridge_open");
-                gem.changeBalance(-20);
-                needManager.InterpolateNeed(NeedManager.NeedType.hunger, 0.7f);
-            }
-            else
-            {
-                Debug.Log("You don't have enough money to eat; you should go to the farm.");
-            }
-        }
-        else if (other.CompareTag("Toilet"))
-        {
-            SoundManager.playSound("toilet_flush");
-            needManager.ResetNeed(NeedManager.NeedType.bladder);
-        }
-        else if (other.CompareTag("Shower"))
-        {
-            SoundManager.playSound("sink_wash");
-            needManager.InterpolateNeed(NeedManager.NeedType.hygiene, 0.7f);
-        }
-        else if (other.CompareTag("Bed"))
-        {
-            needManager.ResetNeed(NeedManager.NeedType.sleep);
-
-        }
     }
 
     private void OnDisable()
     {
         playerControls.Disable();
     }
-
 }
