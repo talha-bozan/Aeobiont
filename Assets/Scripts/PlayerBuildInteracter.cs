@@ -118,8 +118,8 @@ private void UpdateGhostObject(int hotbarIndex)
 
             Vector3 mousePos = Mouse.current.position.ReadValue();
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(mousePos);
-            worldPoint.x = Mathf.Floor(worldPoint.x) + 0.5f;
-            worldPoint.y = Mathf.Floor(worldPoint.y) + 0.5f;
+            worldPoint.x = Mathf.Floor(worldPoint.x) + 0.7f;
+            worldPoint.y = Mathf.Floor(worldPoint.y) +0.2f;
             ghostObject.transform.position = new Vector3(worldPoint.x, worldPoint.y, 0);
             ghostObject.SetActive(true);
         }
@@ -141,7 +141,7 @@ private void UpdateGhostObject(int hotbarIndex)
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if(gameObject != null)
+        if(hotbar != null || plotSign != null)
         {
             // Check if the collider belongs to the trigger area
             if (other.CompareTag("Home"))
