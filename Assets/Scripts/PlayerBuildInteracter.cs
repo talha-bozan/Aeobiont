@@ -53,8 +53,10 @@ public class PlayerBuildInteracter : MonoBehaviour
 
     private void HandleTouchInput()
     {
+
         if (Input.touchCount > 0)
         {
+            Debug.Log("Touch input");
             // Check if joystick input is active
             if (joystick.Horizontal != 0 || joystick.Vertical != 0)
             {
@@ -83,34 +85,34 @@ public class PlayerBuildInteracter : MonoBehaviour
         }
     }
     private void HandleMouseInput()
-{
-    if (EventSystem.current.IsPointerOverGameObject())
-        return;
-
-    if (Mouse.current.leftButton.isPressed)
     {
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        mousePosition.z = 0f;
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
 
-        // Use Raycast to find the first object hit
-        RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, 0.1f, mask); // Zero vector to raycast to the exact point
-
-        if (hit.collider != null)
+        if (Mouse.current.leftButton.isPressed)
         {
-            GridCell plotGrid = hit.collider.GetComponent<GridCell>();
-            if (plotGrid != null)
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            mousePosition.z = 0f;
+
+            // Use Raycast to find the first object hit
+            RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, 0.1f, mask); // Zero vector to raycast to the exact point
+
+            if (hit.collider != null)
             {
-                if (objectToPlace == null)
-                    plotGrid.deleteObject();
-                else
-                    plotGrid.placeObject(objectToPlace);
+                GridCell plotGrid = hit.collider.GetComponent<GridCell>();
+                if (plotGrid != null)
+                {
+                    if (objectToPlace == null)
+                        plotGrid.deleteObject();
+                    else
+                        plotGrid.placeObject(objectToPlace);
+                }
             }
         }
     }
-}
 
 
-private void UpdateGhostObject(int hotbarIndex)
+    private void UpdateGhostObject(int hotbarIndex)
     {
         if (hotbar.activeInHierarchy)
         {
@@ -119,7 +121,7 @@ private void UpdateGhostObject(int hotbarIndex)
             Vector3 mousePos = Mouse.current.position.ReadValue();
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(mousePos);
             worldPoint.x = Mathf.Floor(worldPoint.x) + 0.7f;
-            worldPoint.y = Mathf.Floor(worldPoint.y) +0.2f;
+            worldPoint.y = Mathf.Floor(worldPoint.y) + 0.2f;
             ghostObject.transform.position = new Vector3(worldPoint.x, worldPoint.y, 0);
             ghostObject.SetActive(true);
         }
@@ -141,7 +143,7 @@ private void UpdateGhostObject(int hotbarIndex)
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if(hotbar != null || plotSign != null)
+        if (hotbar != null || plotSign != null)
         {
             // Check if the collider belongs to the trigger area
             if (other.CompareTag("Home"))

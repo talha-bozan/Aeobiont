@@ -40,7 +40,7 @@ public class NeedManager : MonoBehaviour
         hunger.SetMaxValue(bladder.GetMaxValue());
         hygiene.SetMaxValue(bladder.GetMaxValue());
         social.SetMaxValue(bladder.GetMaxValue());
-        
+
     }
 
     void Update()
@@ -50,15 +50,14 @@ public class NeedManager : MonoBehaviour
         UpdateNeed(hunger, difficultyLevel * 0.5f);
         UpdateNeed(hygiene, difficultyLevel * 0.5f);
         UpdateNeed(social, difficultyLevel * 0.5f);
-        Debug.Log(difficultyLevel);
-        
+
         CheckGameOver();
     }
 
     public void UpdateNeed(Need need, float decayRate)
     {
         float damage = decayRate * Time.deltaTime * Random.Range(0.7f, 1.1f);
-        need.SetValue(need.GetValue() - damage);  
+        need.SetValue(need.GetValue() - damage);
     }
 
     void CheckGameOver()
