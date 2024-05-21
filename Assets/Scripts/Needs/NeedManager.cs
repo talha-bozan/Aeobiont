@@ -36,20 +36,20 @@ public class NeedManager : MonoBehaviour
 
 
         bladder.SetMaxValue(bladder.GetMaxValue());
-        sleep.SetMaxValue(bladder.GetMaxValue());
-        hunger.SetMaxValue(bladder.GetMaxValue());
-        hygiene.SetMaxValue(bladder.GetMaxValue());
-        social.SetMaxValue(bladder.GetMaxValue());
+        sleep.SetMaxValue(sleep.GetMaxValue());
+        hunger.SetMaxValue(hunger.GetMaxValue());
+        hygiene.SetMaxValue(hygiene.GetMaxValue());
+        social.SetMaxValue(social.GetMaxValue());
 
     }
 
     void Update()
     {
-        UpdateNeed(bladder, difficultyLevel * 0.5f);
-        UpdateNeed(sleep, difficultyLevel * 0.5f);
-        UpdateNeed(hunger, difficultyLevel * 0.5f);
-        UpdateNeed(hygiene, difficultyLevel * 0.5f);
-        UpdateNeed(social, difficultyLevel * 0.5f);
+        UpdateNeed(bladder, difficultyLevel * 0.3f);
+        UpdateNeed(sleep, difficultyLevel * 0.1f);
+        UpdateNeed(hunger, difficultyLevel * 0.2f);
+        UpdateNeed(hygiene, difficultyLevel * 0.25f);
+        UpdateNeed(social, difficultyLevel * 0.15f);
 
         CheckGameOver();
     }
