@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Cysharp.Threading.Tasks; 
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 
 public class CharacterController2D : MonoBehaviour
 {
     [Header("Movement Settings")]
-    private float _moveSpeed = 100f; 
+    private float _moveSpeed = 100f;
     public float MoveSpeed
     {
         get { return _moveSpeed; }
@@ -28,17 +28,17 @@ public class CharacterController2D : MonoBehaviour
 
     [Header("Input Settings")]
     [SerializeField] private InputAction playerControls;
+    [SerializeField] private InputActionReference attack;
     private bool canDash = true;
 
     [Header("Platform Specific")]
     [SerializeField] private GameObject joystickGameObject;
     [SerializeField] private Joystick joystick;
-
+    [SerializeField] private WeaponParent weaponParent;
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-
         playerControls.Enable();
     }
 
@@ -87,7 +87,15 @@ public class CharacterController2D : MonoBehaviour
         anim.SetFloat("Horizontal", moveDirection.x);
         anim.SetFloat("Vertical", moveDirection.y);
     }
+    private void OnEnable()
+    {
+        attack.action.performed += PerformAttack;
+    }
 
+    private void PerformAttack(InputAction.CallbackContext context)
+    {
+        weaponParent.Attack();
+    }
     private void ProcessMovement()
     {
         DOTween.Kill(rb);
@@ -103,23 +111,24 @@ public class CharacterController2D : MonoBehaviour
         {
             Vector2 dashForce = moveDirection.normalized * _dashSpeed;
 
-            rb.DOMove(rb.position + dashForce, 0.1f) 
+            rb.DOMove(rb.position + dashForce, 0.1f)
                .SetEase(Ease.InOutQuad);
 
             canDash = false;
 
-            await StartDashCooldown(); 
+            await StartDashCooldown();
         }
     }
 
     private async UniTask StartDashCooldown()
     {
-        await UniTask.Delay(3000); 
+        await UniTask.Delay(3000);
         canDash = true;
     }
 
     private void OnDisable()
     {
+        attack.action.performed -= PerformAttack;
         playerControls.Disable();
     }
 }
